@@ -1,0 +1,8 @@
+{
+    "rss": {
+        "ria": "https://ria.ru/export/rss2/index.xml",
+        "tass": "http://tass.ru/rss/v2.xml",
+        "meduza": "https://meduza.io/rss/all",
+        "newsru": "https://rss.newsru.com/all_news/"
+    }
+}
