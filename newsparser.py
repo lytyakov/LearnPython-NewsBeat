@@ -13,6 +13,9 @@ logging.basicConfig(
 )
 
 def parse_rss(url):
+    """
+    Returns generator of items in rss channel found at url
+    """
     r = requests.get(url)
     etl_dttm = datetime.datetime.utcnow().isoformat()
     rss = bs4.BeautifulSoup(r.text, "html.parser")
