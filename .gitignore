@@ -1,8 +1,8 @@
 debug.py
 *.log
 *.db
-*.vscode
-*.DB_store
+*vscode
+*.DS_store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
