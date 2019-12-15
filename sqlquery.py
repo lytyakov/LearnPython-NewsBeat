@@ -1,11 +1,11 @@
 import logging
 import sqlite3
-from settings import DB_PATH, NEWS_TAB, NEWS_COLS
+from config import DB_PATH, TABLES
 
 logging.basicConfig(
     format = "%(asctime)s - %(levelname)s - %(message)s",
     level = logging.INFO,
-    filename = "dbconnector.log"
+    filename = "sqlquery.log"
 )
 
 def execute_query(query = "", *args):
@@ -14,7 +14,8 @@ def execute_query(query = "", *args):
 
     Params:
     query: text of sql query with one statement
-    *args: placeholders for query (additional arguments passed to cursor.execute method)
+    *args: placeholders for query 
+           (additional arguments passed to cursor.execute method)
     """
     query = str(query)
     result = None
@@ -43,14 +44,12 @@ def execute_query(query = "", *args):
 
 if __name__ == "__main__":
     
-    create_news_tab_query = "CREATE TABLE IF NOT EXISTS {tablename}\n({columns});".format(
-        tablename = NEWS_TAB, 
-        columns = ',\n'.join(
-            map(
-                lambda x: ' '.join(x), 
-                NEWS_COLS.items()
-            )
+    create_query_tmpl = "CREATE TABLE IF NOT EXISTS {tablename} ({columns});"
+    
+    for tab, cols in TABLES.items():
+        create_query = create_query_tmpl.format(
+            tablename = tab,
+            columns = ', '.join(' '.join(i) for i in cols.items())
         )
-    )
-
-    execute_query(create_news_tab_query)
+        execute_query(create_query)
+        logging.info(create_query)
