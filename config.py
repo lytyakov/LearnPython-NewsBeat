@@ -12,6 +12,7 @@ TABLES = {
     "news": {
         "id": "TEXT", 
         "fulltext": "TEXT", 
+        "author": "TEXT",
         "etl_dttm": "TEXT"
     }
 }
