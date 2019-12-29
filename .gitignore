@@ -1,7 +1,7 @@
 debug.py
 *.log
 *.db
-vscode/
+/.vscode/
 *.DS_Store
 
 # Byte-compiled / optimized / DLL files
