@@ -1,9 +1,8 @@
 import os
 
-DB_PATH =  os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
-    "news.db"
-)
+PATH = os.path.dirname(os.path.abspath(__file__))
+
+DB_PATH =  os.path.join(PATH, "news.db")
 SQLALCHEMY_DATABASE_URI = "sqlite:///" + DB_PATH
 
 PARSER_RULES = {

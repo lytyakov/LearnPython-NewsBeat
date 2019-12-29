@@ -1,8 +1,9 @@
 from sqlalchemy import create_engine, Column, Integer, Text
 from sqlalchemy.ext.declarative import declarative_base
-from config import SQLALCHEMY_DATABASE_URI, DB_PATH
+from parser_config import SQLALCHEMY_DATABASE_URI, DB_PATH, PATH
 from sqlite3 import complete_statement, connect, Error
 import logging
+from os.path import abspath, dirname, join
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
 
@@ -32,7 +33,7 @@ class News(Base):
 logging.basicConfig(
     format = "%(asctime)s - %(levelname)s - %(message)s",
     level = logging.INFO,
-    filename = "sqlquery.log"
+    filename = join(PATH, "db.log")
 )
 
 def execute_query(query = "", *args):

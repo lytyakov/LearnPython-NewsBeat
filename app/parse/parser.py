@@ -1,7 +1,7 @@
 import requests
 import bs4
 import logging
-from config import PARSER_RULES
+from parser_config import PARSER_RULES
 from datetime import datetime
 from selenium import webdriver
 from db import engine, News
@@ -40,6 +40,7 @@ def parse_rss(source):
                 item_col_value = None
                 err_msg = "An error while parsing rss:\n" + \
                     "Error: {}\n".format(e.args[0]) + \
+                    "Column: {}, attribute: {}\n".format(db_col, attr) + \
                     "Item: {}".format(item)
                 logging.info(err_msg)
             finally:
