@@ -1,13 +1,13 @@
 import requests
 import bs4
 import logging
-from parser_config import PARSER_RULES
+from config import PARSER_RULES
 from datetime import datetime
 from selenium import webdriver
 from db import engine, News
 from sqlalchemy.orm import sessionmaker
 
-LINEBREAK = "\n"
+TEXTSEPARATOR = "\n"
 
 logging.basicConfig(
     format = "%(asctime)s - %(levelname)s - %(message)s",
@@ -57,7 +57,6 @@ def parse_news(source, url):
         driver.get(url)
         page = bs4.BeautifulSoup(driver.page_source, 'html.parser')
     except Exception as e:
-        print(url)
         err_msg = "An error while getting news item:\n" + \
                   "Error: {}\n".format(e.args[0]) + \
                   "News: {}".format(url)
@@ -77,7 +76,7 @@ def parse_news(source, url):
             else:
                 text = [tag.text for tag in tags]
             text = [t for t in text if isinstance(t, str)]
-            result[attr] = LINEBREAK.join(text) 
+            result[attr] = TEXTSEPARATOR.join(text) 
         except Exception as e:
             err_msg = "An error while getting news item:\n" + \
                       "Error: {}\n".format(e.args[0]) + \
