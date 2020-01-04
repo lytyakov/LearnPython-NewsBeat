@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, Text
+from sqlalchemy import create_engine, Column, Integer, Float, Text
 from sqlalchemy.ext.declarative import declarative_base
 from config import SQLALCHEMY_DATABASE_URI, DB_PATH
 from sqlite3 import complete_statement, connect, Error
@@ -25,10 +25,26 @@ class News(Base):
     etl_dttm = Column(Text)
     
     def __repr__(self):
-        print("{} News: {}, {}".format(self.source, 
+        return "{} news: {}, {}".format(self.source, 
                                        self.title, 
-                                       self.pub_dttm))
+                                       self.pub_dttm)
 
+class Sentiments(Base):
+    __tablename__ = 'sentiments'
+    
+    id = Column(Integer, primary_key = True)
+    dost_negative = Column(Float)
+    dost_neutral = Column(Float)
+    dost_positive = Column(Float)
+    dost_skip = Column(Float)
+    dost_speech = Column(Float)
+    sent_score = Column(Float)
+    sent_positive = Column(Float)
+    sent_negative = Column(Float)
+    sent_comparative = Column(Float)
+
+    def __repr__(self):
+        return "sentiments for news id = {}".format(self.id)
 
 logging.basicConfig(
     format = "%(asctime)s - %(levelname)s - %(message)s",
