@@ -26,8 +26,8 @@ class News(Base):
     
     def __repr__(self):
         return "{} news: {}, {}".format(self.source, 
-                                       self.title, 
-                                       self.pub_dttm)
+                                        self.title, 
+                                        self.pub_dttm)
 
 class Sentiments(Base):
     __tablename__ = 'sentiments'
