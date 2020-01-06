@@ -1,16 +1,15 @@
-from db import engine, News, Sentiments
 from config import PATH
-from sqlalchemy.orm import sessionmaker
-from sentimental import Sentimental
+from db import engine, News, Sentiments
 from dostoevsky.models import FastTextSocialNetworkModel
 from dostoevsky.tokenization import RegexTokenizer
+from logging import basicConfig, INFO, info
 from os.path import dirname, join
+from sentimental import Sentimental
+from sqlalchemy.orm import sessionmaker
 
-import logging
-
-logging.basicConfig(
+basicConfig(
     format = "%(asctime)s - %(levelname)s - %(message)s",
-    level = logging.INFO,
+    level = INFO,
     filename = join(PATH, "sentiments.log")
 )
 
@@ -31,12 +30,13 @@ def analyze(text):
                     result = model.predict([text])[0]
                 elif prefix == "sent":
                     result = model.analyze(text)
-                result = {"_".join([prefix, k]): v for k, v in result.items()}
+                result = {"_".join([prefix, k]): v 
+                          for k, v in result.items()}
                 sentiment.update(result)
             except Exception as e:
                 err_msg_tmpl = "An error while sentiment analysis:/n{}/n/n{}"
                 err_msg = err_msg_tmpl.format(e.args[0], text)
-                logging.info(err_msg)
+                info(err_msg)
     return sentiment
 
 

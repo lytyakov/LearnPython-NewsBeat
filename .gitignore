@@ -1,7 +1,8 @@
 debug.py
 *.log
 *.db
-/db/
+/app/db/
+/app/visual/
 /.vscode/
 *.DS_Store
 

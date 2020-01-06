@@ -5,6 +5,8 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 DB_PATH =  os.path.join(PATH, "db", "news.db")
 SQLALCHEMY_DATABASE_URI = "sqlite:///" + DB_PATH
 
+VISUAL_PATH = os.path.join(PATH, "visual")
+
 PARSER_RULES = {
     "ria": {
         "url": "https://ria.ru/export/rss2/index.xml",

@@ -1,9 +1,16 @@
+from config import DB_PATH, SQLALCHEMY_DATABASE_URI
+from logging import basicConfig, INFO, info
+from os.path import abspath, dirname, join
 from sqlalchemy import create_engine, Column, Integer, Float, Text
 from sqlalchemy.ext.declarative import declarative_base
-from config import SQLALCHEMY_DATABASE_URI, DB_PATH
-from sqlite3 import complete_statement, connect, Error
-import logging
-from os.path import abspath, dirname, join
+from sqlite3 import Error, complete_statement, connect
+
+
+basicConfig(
+    format = "%(asctime)s - %(levelname)s - %(message)s",
+    level = INFO,
+    filename = join(dirname(DB_PATH), "db.log")
+)
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
 
@@ -29,6 +36,7 @@ class News(Base):
                                         self.title, 
                                         self.pub_dttm)
 
+
 class Sentiments(Base):
     __tablename__ = 'sentiments'
     
@@ -46,11 +54,20 @@ class Sentiments(Base):
     def __repr__(self):
         return "sentiments for news id = {}".format(self.id)
 
-logging.basicConfig(
-    format = "%(asctime)s - %(levelname)s - %(message)s",
-    level = logging.INFO,
-    filename = join(dirname(DB_PATH), "db.log")
-)
+
+class Scores(Base):
+    __tablename__ = 'scores'
+    
+    id = Column(Integer, primary_key = True)
+    dt = Column(Text)
+    source = Column(Text)
+    score = Column(Float)
+
+    def __repr__(self):
+        return "{} score at {} = {}".format(self.source,
+                                            self.dt,
+                                            self.score)
+
 
 def execute_query(query = "", *args):
     """
@@ -82,7 +99,7 @@ def execute_query(query = "", *args):
     else:
         err_msg = err_msg_tmpl.format('Incorrect query: not complete sql statement')
     if err_msg:
-        logging.info(err_msg)
+        info(err_msg)
     return result
 
 
