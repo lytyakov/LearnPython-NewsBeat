@@ -39,7 +39,7 @@ def score():
 
 def plot_bars(dt=None):
     """
-    Plots single score as boxplot for news sources.
+    Plots single score as barplot for news sources.
     """
     Session = sessionmaker(bind=engine)
     session = Session()
