@@ -1,19 +1,20 @@
-import requests
-import bs4
-import click
-import logging
+from bs4 import BeautifulSoup
+from click import command, option
 from config import PARSER_RULES, PATH
 from datetime import datetime
-from selenium import webdriver
 from db import engine, News
-from sqlalchemy.orm import sessionmaker
+from logging import basicConfig, INFO, info
 from os.path import join
+from requests import get, RequestException
+from selenium import webdriver
+from sqlalchemy.orm import sessionmaker
+
 
 TEXTSEPARATOR = "\n"
 
-logging.basicConfig(
+basicConfig(
     format = "%(asctime)s - %(levelname)s - %(message)s",
-    level = logging.INFO,
+    level = INFO,
     filename = join(PATH, "parser.log")
 )
 
@@ -24,13 +25,13 @@ def parse_rss(source):
     source_url = PARSER_RULES[source]["url"]
     source_rss = PARSER_RULES[source]["rss"]
     try:
-        rss_request = requests.get(source_url)
+        rss_request = get(source_url)
         rss_request.raise_for_status()
-        rss_channel_tree = bs4.BeautifulSoup(rss_request.text, "html.parser")
-    except (requests.RequestException, AttributeError, ValueError) as e:
+        rss_channel_tree = BeautifulSoup(rss_request.text, "html.parser")
+    except (RequestException, AttributeError, ValueError) as e:
         err_msg = "An error while getting rss channel:\n" + \
                   "Error: {}\n".format(e.args[0])
-        logging.info(err_msg)
+        info(err_msg)
         yield None
 
     for item in rss_channel_tree.find_all('item'):
@@ -44,7 +45,7 @@ def parse_rss(source):
                     "Error: {}\n".format(e.args[0]) + \
                     "Column: {}, attribute: {}\n".format(db_col, attr) + \
                     "Item: {}".format(item)
-                logging.info(err_msg)
+                info(err_msg)
             finally:
                 result[db_col] = item_col_value
         yield result
@@ -59,13 +60,13 @@ def parse_news(source, url):
         options.headless = True
         driver = webdriver.Firefox(options=options)
         driver.get(url)
-        page = bs4.BeautifulSoup(driver.page_source, 'html.parser')
+        page = BeautifulSoup(driver.page_source, 'html.parser')
         driver.close()
     except Exception as e:
         err_msg = "An error while getting news item:\n" + \
                   "Error: {}\n".format(e.args[0]) + \
                   "News: {}".format(url)
-        logging.info(err_msg)
+        info(err_msg)
         return None
         
     source_news = PARSER_RULES[source]["news"]
@@ -84,7 +85,7 @@ def parse_news(source, url):
             err_msg = "An error while getting news item:\n" + \
                       "Error: {}\n".format(e.args[0]) + \
                       "News: {}".format(url)
-            logging.info(err_msg)
+            info(err_msg)
             result[attr] = None
     result["etl_dttm"] = datetime.utcnow().isoformat()
     return result
@@ -111,8 +112,8 @@ def parse():
                 session.commit()
 
 
-@click.command()
-@click.option('--single_mode', '-s', is_flag=True, help="Run single.")
+@command()
+@option('--single_mode', '-s', is_flag=True, help="Run single.")
 def main(single_mode):
 
     if single_mode:
