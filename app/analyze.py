@@ -98,7 +98,6 @@ def source_daily_score():
             session.add(Scores(**item))
             session.commit()
 
-def tg_send_plot()
 
 if __name__ == "__main__":
 
@@ -112,7 +111,8 @@ if __name__ == "__main__":
     plot_lines()
     
     path_to_plot = plot_to_send()
+    chat_ids = get_chat_id()
 
-    with open(path_to_plot, "rb") as plot
-        for chat_id in get_chat_id():
+    with open(path_to_plot, "rb") as plot:
+        for chat_id in chat_ids:
             send_plot(chat_id, plot)

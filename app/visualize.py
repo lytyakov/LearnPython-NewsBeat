@@ -62,8 +62,9 @@ def plot_lines(start_dt=None, end_dt=None):
 
 
 def plot_to_send():
-    return "app/visual/lineplot_2019-12-28_2020-01-05.png"
-
+    filename = "lineplot_2019-12-28_2020-01-05.png"
+    return join(VISUAL_PATH, filename)
+    
 
 if __name__ == "__main__":
     plot_bars()
