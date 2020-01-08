@@ -23,6 +23,7 @@ def get_chat_id():
     for chat in chats:
         yield chat.chat_id
 
+
 def send_plot(chat_id, plot):
     method_name = "sendPhoto"
     url = API_URL.format(token=TOKEN, 
@@ -30,6 +31,7 @@ def send_plot(chat_id, plot):
     data = {"chat_id": chat_id}
     files = {"plot": plot}
     post(url, data=data, files=files)
+
 
 tb = TeleBot(TOKEN)
 
@@ -48,10 +50,12 @@ def subscribe(message):
         session.commit()
         tb.reply_to(message, reply)
 
+
 @tb.message_handler(commands=['unsubscribe'])
 def unsubscribe(message):
         reply = "You have unsubscribed from LearnPython-NewsBeat."
         tb.reply_to(message, reply)
+
 
 if __name__ == "__main__":
     tb.polling() 
