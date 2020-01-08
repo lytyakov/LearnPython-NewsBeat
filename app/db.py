@@ -69,6 +69,18 @@ class Scores(Base):
                                             self.score)
 
 
+class Chats(Base):
+    __tablename__ = 'chats'
+    
+    id = Column(Integer, primary_key = True)
+    chat_id = Column(Integer)
+    subscr_from = Column(Text)
+    subscr_to = Column(Text)
+    
+    def __repr__(self):
+        return "subscribed chat {}".format(self.chat_id)
+
+
 def execute_query(query = "", *args):
     """
     Executes query to sqlite database.

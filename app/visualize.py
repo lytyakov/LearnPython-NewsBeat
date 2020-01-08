@@ -1,40 +1,13 @@
 from config import VISUAL_PATH
 from db import engine, News, Sentiments, Scores
+from json import loads
 from matplotlib.pyplot import figure 
 from os.path import abspath, dirname, join
-from pandas import DataFrame, read_sql_table, Timedelta, to_datetime
+from pandas import DataFrame, read_sql_table
 from seaborn import barplot, lineplot
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
-
-
-def score():
-    """
-    Calculates daily aggregated sentiment ratio for news.
-    """
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    
-    max_scored_dt = session.query(func.max(Scores.dt)).scalar() or "2019-01-01"
-    max_scored_dt = to_datetime(max_scored_dt) 
-    max_scored_dt += Timedelta("1 day")
-    max_scored_dt = max_scored_dt.isoformat()
-
-    query = session.query(News.source.label("source"),  
-                          News.etl_dttm.label("dt"),
-                          Sentiments.sent_comparative.label("score"))\
-                   .join(Sentiments, 
-                         News.id == Sentiments.id)\
-                   .filter(News.etl_dttm >= max_scored_dt)\
-                   .all()
-    data = DataFrame(query)
-    if data.shape[0]:
-        data["dt"] = data["dt"].apply(lambda x: x[:10])
-        groupers = ["dt", "source"]
-        data = data.groupby(groupers, as_index=False).mean()
-        for item in data.to_dict('records'):
-            session.add(Scores(**item))
-            session.commit()
+from telebot import TeleBot
 
 
 def plot_bars(dt=None):
@@ -88,8 +61,11 @@ def plot_lines(start_dt=None, end_dt=None):
     fig.savefig(filename)
 
 
+def plot_to_send():
+    return "app/visual/lineplot_2019-12-28_2020-01-05.png"
+
+
 if __name__ == "__main__":
-    score()
     plot_bars()
     plot_lines()
     
