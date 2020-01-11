@@ -90,4 +90,6 @@ def unsubscribe(message):
 
 
 if __name__ == "__main__":
+    print("The bot is polling.")
+    print("Press Cntrl + C to stop polling.")
     tb.polling() 

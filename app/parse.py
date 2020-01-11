@@ -8,7 +8,7 @@ from os.path import join
 from requests import get, RequestException
 from selenium import webdriver
 from sqlalchemy.orm import sessionmaker
-
+from time import sleep
 
 TEXTSEPARATOR = "\n"
 
@@ -127,6 +127,8 @@ def main(single_mode):
                 parse()
             except KeyboardInterrupt:
                 break
+            except TypeError:
+                sleep(600)
 
 
 if __name__ == "__main__":
