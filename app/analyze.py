@@ -1,15 +1,17 @@
-from bot import get_chat_id, send_plot
-from config import PATH
+from bot import get_subscribed_chats, send_plot
+from config import PATH, VISUAL_PATH
+from datetime import date
 from db import engine, News, Scores, Sentiments
 from dostoevsky.models import FastTextSocialNetworkModel
 from dostoevsky.tokenization import RegexTokenizer
 from logging import basicConfig, INFO, info
+from matplotlib.pyplot import figure, style
 from os.path import dirname, join
-from pandas import DataFrame, Timedelta, to_datetime
+from pandas import DataFrame, read_sql_table, Timedelta, to_datetime
+from seaborn import despine, lineplot, set_style
 from sentimental import Sentimental
 from sqlalchemy import func
 from sqlalchemy.orm import sessionmaker
-from visualize import plot_bars, plot_lines, plot_to_send
 
 basicConfig(
     format = "%(asctime)s - %(levelname)s - %(message)s",
@@ -42,6 +44,7 @@ def analyze(text):
                 err_msg = err_msg_tmpl.format(e.args[0], text)
                 info(err_msg)
     return sentiment
+
 
 def get_news_to_analyze():
     """
@@ -81,6 +84,8 @@ def source_daily_score():
     max_scored_dt = to_datetime(max_scored_dt) 
     max_scored_dt += Timedelta("1 day")
     max_scored_dt = max_scored_dt.isoformat()
+    
+    today = to_datetime(date.today()).isoformat()
 
     query = session.query(News.source.label("source"),  
                           News.etl_dttm.label("dt"),
@@ -88,6 +93,7 @@ def source_daily_score():
                    .join(Sentiments, 
                          News.id == Sentiments.id)\
                    .filter(News.etl_dttm >= max_scored_dt)\
+                   .filter(News.etl_dttm < today)\
                    .all()
     data = DataFrame(query)
     if data.shape[0]:
@@ -99,20 +105,47 @@ def source_daily_score():
             session.commit()
 
 
+def plot_lines():
+    """
+    Plots scores in dynamic (one line for each source).
+    """
+    data = read_sql_table("scores", con=engine)
+    
+    style.use('seaborn-whitegrid')
+    set_style("white")
+
+    fig = figure(figsize=(12,8))
+    ax = fig.gca()
+    g = lineplot(
+        x="dt",
+        y="score",
+        hue="source",
+        data=data,
+        palette="muted",
+        markers=True,
+        style="source",
+        ax=ax
+    )
+    g.legend_.texts[0].set_text("")
+    despine()
+    ax.set(xlabel="", ylabel="")
+    dt = data.dt.max().split("-")[::-1]
+    fig.suptitle("Степень \"негативности\" новостей yа {}.{}.{}".format(*dt), 
+                 fontsize=16)
+    filename = "{}.png".format(data.dt.max())
+    filename = join(VISUAL_PATH, filename)
+    fig.savefig(filename)
+    return filename
+
+
 if __name__ == "__main__":
 
     news = get_news_to_analyze()
     for item in news:
         news_sentiment_score(item)
-    
     source_daily_score()
-
-    plot_bars()
-    plot_lines()
-    
-    path_to_plot = plot_to_send()
-    chat_ids = get_chat_id()
-
-    with open(path_to_plot, "rb") as plot:
+    plot_to_send = plot_lines()
+    chat_ids = get_subscribed_chats()
+    with open(plot_to_send, "rb") as plot:
         for chat_id in chat_ids:
             send_plot(chat_id, plot)
