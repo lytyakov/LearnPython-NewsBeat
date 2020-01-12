@@ -130,7 +130,7 @@ def plot_lines():
     despine()
     ax.set(xlabel="", ylabel="")
     dt = data.dt.max().split("-")[::-1]
-    fig.suptitle("Степень \"негативности\" новостей yа {}.{}.{}".format(*dt), 
+    fig.suptitle("Степень \"негативности\" новостей на {}.{}.{}".format(*dt), 
                  fontsize=16)
     filename = "{}.png".format(data.dt.max())
     filename = join(VISUAL_PATH, filename)
@@ -146,6 +146,6 @@ if __name__ == "__main__":
     source_daily_score()
     plot_to_send = plot_lines()
     chat_ids = get_subscribed_chats()
-    with open(plot_to_send, "rb") as plot:
-        for chat_id in chat_ids:
+    for chat_id in chat_ids:
+        with open(plot_to_send, "rb") as plot:
             send_plot(chat_id, plot)

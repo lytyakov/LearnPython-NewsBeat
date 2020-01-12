@@ -125,6 +125,7 @@ def main(single_mode):
         while True:
             try:
                 parse()
+                sleep(300)
             except KeyboardInterrupt:
                 break
             except TypeError:
