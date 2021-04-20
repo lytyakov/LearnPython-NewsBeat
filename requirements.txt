@@ -25,7 +25,7 @@ numpy==1.18.0
 packaging==19.2
 pandas==0.25.3
 pluggy==0.13.1
-py==1.8.1
+py==1.10.0
 pybind11==2.4.3
 pylint==2.4.4
 pymorphy2==0.8
